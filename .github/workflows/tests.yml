@@ -65,17 +65,7 @@ jobs:
         run: npm run types:check
 
       - name: Unit tests (Vitest)
-        shell: bash
-        run: |
-          set -o pipefail
-          npm test 2>&1 | tee /tmp/vitest.log
-
-      - name: Debug Vitest output
-        if: failure()
-        shell: bash
-        run: |
-          msg=$(tail -60 /tmp/vitest.log | sed -e ':a' -e 'N' -e '$!ba' -e 's/%/%25/g' -e 's/\r//g' -e 's/\n/%0A/g')
-          echo "::error title=vitest::$msg"
+        run: npm test
 
       - name: Code style (Pint)
         run: vendor/bin/pint --test
