@@ -44,3 +44,5 @@ yarn-error.log
 /opencode.jsonc
 /test-results
 /playwright-report
+/plan.md
+/.vagrant

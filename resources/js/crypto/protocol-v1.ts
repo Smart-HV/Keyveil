@@ -76,7 +76,7 @@ async function deriveContentKey(
         return deriveAesGcmKey(linkKey, hkdfSalt, HKDF_INFO_LINK_ONLY);
     }
 
-    // Password mode: the Argon2id output is the HKDF salt (protocol v1 §8.3).
+    // Password mode: the Argon2id output is the HKDF salt (docs/crypto-protocol-v1.md §3).
     const passwordKey = await deriveArgon2idKey(
         encodePassword(password.value),
         password.salt,

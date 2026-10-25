@@ -46,6 +46,6 @@ export default defineConfig({
         semi: true,
         singleAttributePerLine: false,
         htmlWhitespaceSensitivity: 'css',
-        ignorePatterns: ['.github/**', 'composer.json', 'plan.md', 'docs/**'],
+        ignorePatterns: ['.github/**', 'composer.json', 'docs/**'],
     },
 });

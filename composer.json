@@ -1,13 +1,16 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/blank-react-starter-kit",
+    "name": "smart-hv/keyveil",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Self-hosted zero-knowledge secret sharing: passwords and short secrets encrypted in the browser, shared via one-time links.",
     "keywords": [
-        "laravel",
-        "framework"
+        "secret-sharing",
+        "zero-knowledge",
+        "end-to-end-encryption",
+        "one-time-link",
+        "laravel"
     ],
-    "license": "MIT",
+    "license": "Apache-2.0",
     "require": {
         "php": "^8.3",
         "laravel/framework": "^13.17",
@@ -86,7 +89,6 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi",
-            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
             "@php artisan migrate --graceful --ansi"
         ],
         "pre-package-uninstall": [

@@ -7,7 +7,7 @@ import {
 } from './helpers';
 
 /*
- * plan.md §46: the URL fragment must never appear in any request URL, body or
+ * The URL fragment must never appear in any request URL, body or
  * header — neither for the share link nor for the management link.
  */
 test('the share key and delete token never leave the browser', async ({

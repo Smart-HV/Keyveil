@@ -50,7 +50,7 @@ passwordKey = Argon2id(pw, salt = password.salt, m = memory_kib, t = iterations,
 aesKey      = HKDF-SHA-256(ikm = linkKey, salt = passwordKey, info = INFO_PASSWORD, L = 32)
 ```
 
-Im Passwortmodus ist `passwordKey` das HKDF-Salt (plan.md §8.3). Das Envelope-Feld `hkdf_salt` ist trotzdem Pflicht (einheitliches Schema), wird in diesem Modus aber **nicht** verwendet.
+Im Passwortmodus ist `passwordKey` das HKDF-Salt. Das Envelope-Feld `hkdf_salt` ist trotzdem Pflicht (einheitliches Schema), wird in diesem Modus aber **nicht** verwendet.
 
 Passwörter werden vor dem Encoding NFC-normalisiert, damit identisch aussehende Eingaben auf unterschiedlichen Plattformen denselben Schlüssel ergeben.
 
@@ -142,4 +142,4 @@ Secret-Material liegt nur im JavaScript-Speicher. Verwendete Byte-Arrays werden 
 
 ## 9. Versionierung
 
-API-Version (`/api/v1`), Envelope-Version (`v`) und Fragment-Version (`#v1.`) sind getrennt. Für v2: `protocol-v2.ts` hinzufügen, v1-Decryption bis max. TTL + Marge behalten (plan.md §54).
+API-Version (`/api/v1`), Envelope-Version (`v`) und Fragment-Version (`#v1.`) sind getrennt. Für v2: `protocol-v2.ts` hinzufügen, v1-Decryption weiter unterstützen, neue Secrets mit v2 erzeugen und v1 frühestens nach maximaler TTL + Sicherheitsmarge entfernen.

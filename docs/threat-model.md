@@ -43,4 +43,12 @@ Produktversprechen: **Laravel speichert nur verschlüsselte Daten und Lifecycle-
 
 ## Bewusste Produktentscheidungen
 
-Siehe plan.md §66. Insbesondere: Claim verbraucht den View **vor** der Entschlüsselung; ein falsches Passwort nach dem Claim kann daher einen Einmal-Link verbrauchen (der Client erlaubt erneutes lokales Entschlüsseln, solange die Seite offen ist).
+Diese Punkte werden nicht ohne neue, dokumentierte Entscheidung geändert:
+
+1. Der Server kennt keinen Content-Key; es gibt keine Key-Recovery und keine Admin-Entschlüsselung.
+2. Das URL-Fragment ist der einzige Transport für den Link-Key.
+3. Passwortschutz funktioniert vollständig clientseitig, ohne serverseitige Passwortprüfung.
+4. Der Claim verbraucht einen View **vor** der Entschlüsselung. Ein falsches Passwort nach dem Claim kann daher einen Einmal-Link verbrauchen (der Client erlaubt erneutes lokales Entschlüsseln, solange die Seite offen ist).
+5. `GET` der Secret-Seite verbraucht nie einen View.
+6. Kein Datei-Upload, keine strukturierten Secret-Typen, kein Service Worker, kein Third-Party-JavaScript oder Analytics.
+7. Physisches Löschen statt Soft Delete.

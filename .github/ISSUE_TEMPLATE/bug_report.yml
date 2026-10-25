@@ -1,0 +1,40 @@
+name: Bug report
+description: Something does not work as expected.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Security issues:** please do not report them here – use a [private security advisory](https://github.com/Smart-HV/Keyveil/security/advisories/new).
+        Never paste real secrets, share links or delete links into an issue.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open …
+        2. Click …
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and OS
+      placeholder: Firefox 140 on macOS 15
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Remove anything sensitive first.
+      render: shell

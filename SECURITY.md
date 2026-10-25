@@ -4,7 +4,9 @@ KeyVeil überträgt kurze Secrets mit Ende-zu-Ende-Verschlüsselung im Browser. 
 
 ## Sicherheitslücken melden
 
-Bitte **keine** öffentlichen Issues für Sicherheitslücken. Melde sie vertraulich an die Maintainer (Kontaktadresse vor Public Release hier eintragen). Wir bestätigen den Eingang und koordinieren Fix und Veröffentlichung.
+Bitte **keine** öffentlichen Issues für Sicherheitslücken. Melde sie vertraulich über [GitHub Private Vulnerability Reporting](https://github.com/Smart-HV/Keyveil/security/advisories/new). Wir bestätigen den Eingang und koordinieren Fix und Veröffentlichung.
+
+_Please report vulnerabilities privately via [GitHub security advisories](https://github.com/Smart-HV/Keyveil/security/advisories/new), never in a public issue._
 
 ## Dokumentation
 

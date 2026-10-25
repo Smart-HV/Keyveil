@@ -2,7 +2,7 @@
 
 ## Infrastruktur
 
-- PHP 8.4+ mit `pdo_pgsql`, `sodium` (nur Tests), `pcntl`/`posix` (nur Concurrency-Tests)
+- PHP 8.3+ mit `pdo_pgsql`, `sodium` (nur Tests), `pcntl`/`posix` (nur Concurrency-Tests)
 - PostgreSQL (Source of Truth für View-Verbrauch), Session-Zeitzone wird von Laravel auf UTC gesetzt
 - Redis für Cache-Store: Rate Limits und Scheduler-Lock (`CACHE_STORE=redis`)
 - Scheduler: `* * * * * php artisan schedule:run` → `model:prune` für abgelaufene Secrets (`onOneServer`)
@@ -94,7 +94,23 @@ server {
 
 ## Offene Release-TODOs
 
-- [ ] **Argon2id-Benchmark** (plan.md §8.3) auf Desktop Chrome/Firefox/Safari, durchschnittlichem Android, aktuellem iPhone. Ziel: spürbar teuer, aber akzeptabel. Parameter ggf. in `protocol-v1.ts` (`ARGON2ID_DEFAULTS`) anpassen — alte Secrets bleiben entschlüsselbar, da Parameter im Envelope stehen.
+- [ ] **Argon2id-Benchmark** auf Desktop Chrome/Firefox/Safari, durchschnittlichem Android, aktuellem iPhone. Ziel: spürbar teuer, aber akzeptabel. Parameter ggf. in `protocol-v1.ts` (`ARGON2ID_DEFAULTS`) anpassen — alte Secrets bleiben entschlüsselbar, da Parameter im Envelope stehen.
 - [ ] Rate-Limit-Load-Test und Tuning.
-- [ ] Manueller Security-Review (plan.md Phase 11).
-- [ ] Release-Checkliste plan.md §72 abarbeiten.
+- [ ] Manueller Security-Review anhand von `threat-model.md`.
+
+## Release-Checkliste
+
+- [ ] `APP_DEBUG=false`, sicherer `APP_KEY`
+- [ ] Cookies `Secure`/`HttpOnly`/`SameSite=Strict`
+- [ ] HTTPS-Redirect und HSTS aktiv
+- [ ] Keine Debugbar/Telescope auf Secret-Routen
+- [ ] `TRUSTED_PROXIES` nur für die tatsächlichen Proxies
+- [ ] DB-User mit Least Privilege; PostgreSQL und Redis nicht öffentlich erreichbar
+- [ ] Backups verschlüsselt, Retention definiert
+- [ ] Secrets in CI/CD geschützt
+- [ ] `npm audit` und `composer audit` geprüft
+- [ ] CSP und Security-Header im Browser geprüft, keine externen Requests auf Secret-Seiten
+- [ ] Keine öffentlichen Source Maps
+- [ ] Logs auf Redaction geprüft
+- [ ] Rate-Limits unter Last getestet
+- [ ] Scheduler (`schedule:run`) läuft
