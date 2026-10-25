@@ -4,6 +4,7 @@ import { parseDeleteFragment } from '../security/fragment';
 import {
     apiErrorMessage,
     byId,
+    reloadOnFragmentChange,
     removeFragmentFromAddressBar,
     showMessage,
 } from './dom';
@@ -18,6 +19,8 @@ export function init(): void {
     const dialog = byId<HTMLDialogElement>('delete-dialog');
     const status = byId<HTMLElement>('manage-status');
     const publicId = root.dataset.publicId ?? '';
+
+    reloadOnFragmentChange();
 
     let deleteToken: Uint8Array<ArrayBuffer>;
 

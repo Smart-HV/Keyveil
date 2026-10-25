@@ -6,6 +6,7 @@ import {
     bindCopyButton,
     byId,
     hideMessage,
+    reloadOnFragmentChange,
     removeFragmentFromAddressBar,
     showMessage,
 } from './dom';
@@ -26,6 +27,8 @@ export function init(): void {
     const error = byId<HTMLElement>('open-error');
     const output = byId<HTMLElement>('secret-output');
     const publicId = root.dataset.publicId ?? '';
+
+    reloadOnFragmentChange();
 
     let fragment: ShareFragment;
 

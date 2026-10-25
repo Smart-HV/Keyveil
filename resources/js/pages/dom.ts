@@ -53,6 +53,14 @@ export function removeFragmentFromAddressBar(): void {
     history.replaceState(null, '', location.pathname);
 }
 
+/**
+ * Pasting another link into the same tab only changes the fragment, which
+ * does not reload the page. Reload so the new link is parsed from scratch.
+ */
+export function reloadOnFragmentChange(): void {
+    window.addEventListener('hashchange', () => location.reload());
+}
+
 export function apiErrorMessage(error: unknown): string | null {
     if (!(error instanceof ApiError)) {
         return null;
