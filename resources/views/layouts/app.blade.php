@@ -7,12 +7,10 @@
         <meta name="robots" content="noindex, nofollow">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="color-scheme" content="light dark">
-        <meta name="theme-color" content="#F5F7FA" media="(prefers-color-scheme: light)">
-        <meta name="theme-color" content="#0E1626" media="(prefers-color-scheme: dark)">
 
         <title>@yield('title', config('app.name'))</title>
 
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="icon" href="{{ config('branding.favicon') }}">
 
         @vite(['resources/css/app.css', 'resources/js/app.ts'])
     </head>

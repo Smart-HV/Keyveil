@@ -6,7 +6,7 @@
         <meta name="robots" content="noindex, nofollow">
         <meta name="color-scheme" content="light dark">
         <title>@yield('code') – {{ config('app.name') }}</title>
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+        <link rel="icon" href="{{ config('branding.favicon') }}">
         @vite(['resources/css/app.css'])
     </head>
     <body>

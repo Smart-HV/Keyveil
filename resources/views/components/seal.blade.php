@@ -1,6 +1,6 @@
 @props(['state' => 'sealed'])
 
-{{-- KeyVeil seal: a notary-style stamp with a padlock. States: open, sealed, sealing, unsealed (see app.css). --}}
+{{-- Seal: a notary-style stamp with a padlock. States: open, sealed, sealing, unsealed (see app.css). --}}
 <svg {{ $attributes->merge(['class' => 'seal is-'.$state]) }} viewBox="0 0 96 96" aria-hidden="true" focusable="false">
     <circle class="seal-notches" cx="48" cy="48" r="45" />
     <circle class="seal-ring" cx="48" cy="48" r="38" />
