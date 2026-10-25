@@ -13,10 +13,15 @@ export async function createSecret(
     await page.getByLabel('Secret', { exact: true }).fill(options.text);
 
     if (options.maxViews !== undefined) {
-        await page.getByLabel('Maximale Abrufe').fill(String(options.maxViews));
+        await page
+            .getByLabel('Maximale Abrufe')
+            .selectOption(String(options.maxViews));
     }
 
     if (options.password !== undefined) {
+        await page
+            .getByRole('button', { name: 'Zusätzliches Passwort' })
+            .click();
         await page
             .getByLabel('Zusätzliches Passwort (optional)')
             .fill(options.password);

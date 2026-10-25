@@ -81,7 +81,7 @@ server {
 ## Build & Deployment (Malicious-Frontend-Mitigation)
 
 - Assets in CI bauen (`npm ci && npm run build`), Deployment nutzt das CI-Artefakt; kein Build auf dem Production-Host.
-- `package-lock.json` / `composer.lock` committet; Runtime-JS-Abhängigkeiten exakt gepinnt: `hash-wasm@4.12.0`, `uqr@0.1.3` (beide MIT, 0 Dependencies).
+- `package-lock.json` / `composer.lock` committet; Runtime-JS-Abhängigkeiten exakt gepinnt: `hash-wasm@4.12.0`, `uqr@0.1.3` (beide MIT, 0 Dependencies). Schriften: `@fontsource-variable/geist` und `geist-mono` `@5.3.0` (OFL, nur CSS + woff2, kein JS), same-origin über Vite gebündelt.
 - `.npmrc`: `ignore-scripts=true` (keine postinstall-Skripte).
 - Keine öffentlichen Source Maps (`build.sourcemap: false`).
 - Branch Protection, Reviews für alles unter `resources/js/crypto/`, getrennte CI/CD-Rechte, Dependabot-PRs nur mit Review.

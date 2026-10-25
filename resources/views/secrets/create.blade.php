@@ -3,84 +3,170 @@
 @section('page', 'create')
 
 @section('content')
-    <h1>Secret sicher teilen</h1>
+    <div class="intro">
+        <h1>Teile ein Secret, das sich selbst zerstört.</h1>
+        <p class="lead">Passwörter, Zugangsdaten oder Notizen werden in deinem Browser verschlüsselt, bevor sie ihn verlassen. Niemand außer dem Empfänger kann sie lesen – auch wir nicht.</p>
+    </div>
 
     <noscript>
-        <p class="notice notice-error">JavaScript ist erforderlich, da die Verschlüsselung ausschließlich in deinem Browser stattfindet.</p>
+        <p class="notice notice-danger">JavaScript ist erforderlich, da die Verschlüsselung ausschließlich in deinem Browser stattfindet.</p>
     </noscript>
 
     {{-- Inputs intentionally have no "name" attribute: a form submitted without JavaScript never transmits the plaintext. --}}
-    <form id="create-form" class="stack" autocomplete="off" novalidate>
-        <label for="secret-text">Secret</label>
-        <textarea id="secret-text" rows="8" required spellcheck="false" autocapitalize="off" autocorrect="off"></textarea>
-        <p class="hint">Maximal 64 KiB Text.</p>
+    <form id="create-form" class="sheet composer" autocomplete="off" novalidate>
+        <div class="composer-head">
+            <label for="secret-text" class="field-label">Secret</label>
+            <x-seal state="open" class="seal-small" />
+        </div>
 
-        <div class="grid">
-            <div class="stack">
-                <label for="secret-ttl">Ablaufzeit</label>
-                <select id="secret-ttl">
-                    <option value="300">5 Minuten</option>
-                    <option value="900">15 Minuten</option>
-                    <option value="3600" selected>1 Stunde</option>
-                    <option value="21600">6 Stunden</option>
-                    <option value="86400">24 Stunden</option>
-                    <option value="259200">3 Tage</option>
-                    <option value="604800">7 Tage</option>
-                </select>
+        <div class="stamp" aria-hidden="true">
+            <x-seal id="create-seal" state="open" class="seal-stamp" />
+            <p>Wird in deinem Browser versiegelt …</p>
+        </div>
+
+        <textarea id="secret-text" class="composer-text" rows="7" required spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="Passwort, Zugangsdaten oder Notiz einfügen …" aria-describedby="secret-size"></textarea>
+        <p id="secret-size" class="composer-size">0 B von 64 KiB</p>
+
+        <div class="composer-options">
+            <div class="field">
+                <label for="secret-ttl" class="field-label">Ablaufzeit</label>
+                <div class="select-wrap">
+                    <x-icon name="clock" />
+                    <select id="secret-ttl">
+                        <option value="300">5 Minuten</option>
+                        <option value="900">15 Minuten</option>
+                        <option value="3600" selected>1 Stunde</option>
+                        <option value="21600">6 Stunden</option>
+                        <option value="86400">24 Stunden</option>
+                        <option value="259200">3 Tage</option>
+                        <option value="604800">7 Tage</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="stack">
-                <label for="secret-max-views">Maximale Abrufe</label>
-                <input id="secret-max-views" type="number" min="1" max="{{ config('secrets.max_views') }}" value="1" required>
-                <p class="hint"><strong>1 = Einmal-Link</strong> (empfohlen)</p>
+            <div class="field">
+                <label for="secret-max-views" class="field-label">Maximale Abrufe</label>
+                <div class="select-wrap">
+                    <x-icon name="eye" />
+                    <select id="secret-max-views">
+                        @foreach (range(1, config('secrets.max_views')) as $views)
+                            <option value="{{ $views }}" @selected($views === 1)>{{ $views === 1 ? '1× – Einmal-Link' : $views.'×' }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </div>
 
-        <label for="secret-password">Zusätzliches Passwort (optional)</label>
-        <input id="secret-password" type="password" autocomplete="new-password">
-        <p class="hint">Bei Passwortschutz benötigt der Empfänger den Link <em>und</em> das Passwort. Übermittle das Passwort über einen anderen Kanal.</p>
+        <div class="composer-password">
+            <button id="password-toggle" type="button" class="button button-text" aria-expanded="false" aria-controls="password-field">
+                <x-icon name="plus" class="when-collapsed" />
+                <x-icon name="minus" class="when-expanded" />
+                <span>Zusätzliches Passwort</span>
+            </button>
 
-        <p id="create-error" class="notice notice-error" role="alert" hidden></p>
+            <div id="password-field" class="field" hidden>
+                <label for="secret-password" class="visually-hidden">Zusätzliches Passwort (optional)</label>
+                <input id="secret-password" type="password" autocomplete="new-password">
+                <p class="field-hint">Der Empfänger braucht dann Link <em>und</em> Passwort. Schicke das Passwort über einen anderen Kanal.</p>
+            </div>
+        </div>
 
-        <button id="create-button" type="submit" class="button-primary" disabled>Verschlüsseln &amp; Link erstellen</button>
+        <p id="create-error" class="notice notice-danger" role="alert" hidden></p>
+
+        <div class="composer-actions">
+            <p class="composer-note">Der Server erhält nur verschlüsselte Daten.</p>
+            <button id="create-button" type="submit" class="button button-primary" disabled>
+                <x-icon name="lock" />
+                <span>Verschlüsseln &amp; Link erstellen</span>
+            </button>
+        </div>
     </form>
 
-    <ul class="hints">
-        <li>Die Verschlüsselung findet lokal in deinem Browser statt.</li>
-        <li>Der Server erhält keinen Klartext und keinen Schlüssel.</li>
-        <li>Der Link selbst ist sensibel: Wer ihn besitzt, kann das Secret öffnen.</li>
-    </ul>
-
-    <section id="create-result" class="stack" hidden>
-        <h2>Link erstellt</h2>
-
-        <label for="share-link">Share-Link</label>
-        <div class="row">
-            <input id="share-link" type="text" readonly spellcheck="false">
-            <button id="copy-share-link" type="button">Kopieren</button>
+    <section id="create-result" class="sheet result" aria-labelledby="result-heading" hidden>
+        <div class="result-head">
+            <x-seal state="sealed" class="seal-large" />
+            <div>
+                <h2 id="result-heading">Link erstellt</h2>
+                <p class="field-hint">Versiegelt und bereit zum Teilen.</p>
+            </div>
         </div>
-        <p id="copy-share-link-status" class="hint" role="status"></p>
 
-        <div id="qr-code" class="qr" aria-label="QR-Code des Share-Links"></div>
-
-        <dl class="meta">
-            <dt>Läuft ab</dt>
-            <dd id="result-expires"></dd>
-            <dt>Maximale Abrufe</dt>
-            <dd id="result-max-views"></dd>
-            <dt>Passwortschutz</dt>
-            <dd id="result-password"></dd>
-        </dl>
-
-        <label for="manage-link">Lösch-Link (nur für dich)</label>
-        <div class="row">
-            <input id="manage-link" type="text" readonly spellcheck="false">
-            <button id="copy-manage-link" type="button">Kopieren</button>
+        <div class="field">
+            <label for="share-link" class="field-label">Share-Link</label>
+            <div class="copy-row">
+                <input id="share-link" class="mono" type="text" readonly spellcheck="false">
+                <button id="copy-share-link" type="button" class="button button-secondary copy-button">
+                    <x-icon name="copy" class="when-idle" />
+                    <x-icon name="check" class="when-copied" />
+                    <span>Kopieren</span>
+                </button>
+            </div>
+            <p id="copy-share-link-status" class="visually-hidden" role="status"></p>
         </div>
-        <p id="copy-manage-link-status" class="hint" role="status"></p>
 
-        <p class="notice">Bewahre die Links jetzt auf. Ein verlorener Link oder Schlüssel ist nicht wiederherstellbar.</p>
+        <div class="result-details">
+            <dl class="meta">
+                <div>
+                    <dt>Läuft ab</dt>
+                    <dd id="result-expires"></dd>
+                </div>
+                <div>
+                    <dt>Maximale Abrufe</dt>
+                    <dd id="result-max-views"></dd>
+                </div>
+                <div>
+                    <dt>Passwortschutz</dt>
+                    <dd id="result-password"></dd>
+                </div>
+            </dl>
 
-        <a href="{{ route('home') }}" class="button">Neues Secret</a>
+            <figure class="qr-figure">
+                <div id="qr-code" class="qr"></div>
+                <figcaption>Auf einem anderen Gerät scannen</figcaption>
+            </figure>
+        </div>
+
+        <p class="notice notice-caution">
+            <x-icon name="alert" />
+            <span>Kopiere den Link jetzt. Er enthält den Schlüssel und kann später nicht wiederhergestellt werden.</span>
+        </p>
+
+        <details class="disclosure">
+            <summary>Lösch-Link (nur für dich)</summary>
+            <p class="field-hint">Damit kannst du das Secret vor Ablauf endgültig löschen. Nicht weitergeben.</p>
+            <label for="manage-link" class="visually-hidden">Lösch-Link</label>
+            <div class="copy-row">
+                <input id="manage-link" class="mono" type="text" readonly spellcheck="false">
+                <button id="copy-manage-link" type="button" class="button button-secondary copy-button">
+                    <x-icon name="copy" class="when-idle" />
+                    <x-icon name="check" class="when-copied" />
+                    <span>Kopieren</span>
+                </button>
+            </div>
+            <p id="copy-manage-link-status" class="visually-hidden" role="status"></p>
+        </details>
+
+        <a href="{{ route('home') }}" class="button button-text">
+            <x-icon name="plus" />
+            <span>Neues Secret erstellen</span>
+        </a>
+    </section>
+
+    <section class="steps" aria-labelledby="steps-heading">
+        <h2 id="steps-heading">So funktioniert's</h2>
+        <ol>
+            <li>
+                <strong>Im Browser verschlüsseln</strong>
+                <span>Dein Text wird mit AES-256 verschlüsselt. Der Schlüssel entsteht nur auf deinem Gerät.</span>
+            </li>
+            <li>
+                <strong>Link teilen</strong>
+                <span>Der Schlüssel steckt im Teil des Links nach dem #, den Browser nie an Server senden.</span>
+            </li>
+            <li>
+                <strong>Öffnen, dann gelöscht</strong>
+                <span>Nach dem letzten erlaubten Abruf oder nach Ablauf wird das Secret endgültig gelöscht.</span>
+            </li>
+        </ol>
     </section>
 @endsection

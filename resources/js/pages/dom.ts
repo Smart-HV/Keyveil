@@ -1,13 +1,13 @@
 import { ApiError } from '../api/secrets';
 
-export function byId<T extends HTMLElement>(id: string): T {
+export function byId<T extends Element = HTMLElement>(id: string): T {
     const element = document.getElementById(id);
 
     if (element === null) {
         throw new Error(`Missing element #${id}`);
     }
 
-    return element as T;
+    return element as unknown as T;
 }
 
 /**
@@ -32,10 +32,19 @@ export function bindCopyButton(
     status: HTMLElement,
     text: () => string,
 ): void {
+    let reset: ReturnType<typeof setTimeout> | undefined;
+
     button.addEventListener('click', () => {
         navigator.clipboard.writeText(text()).then(
             () => {
                 status.textContent = 'In Zwischenablage kopiert.';
+                button.classList.add('is-copied');
+                setButtonLabel(button, 'Kopiert');
+                clearTimeout(reset);
+                reset = setTimeout(() => {
+                    button.classList.remove('is-copied');
+                    setButtonLabel(button, 'Kopieren');
+                }, 2000);
             },
             () => {
                 status.textContent =
@@ -43,6 +52,33 @@ export function bindCopyButton(
             },
         );
     });
+}
+
+/**
+ * Change a button's visible label while keeping its icon.
+ */
+export function setButtonLabel(button: HTMLElement, label: string): void {
+    const span = button.querySelector('span');
+
+    if (span !== null) {
+        span.textContent = label;
+    } else {
+        button.textContent = label;
+    }
+}
+
+export type SealState = 'open' | 'sealed' | 'sealing' | 'unsealed';
+
+/**
+ * Switch the seal illustration state; the animation lives in app.css.
+ */
+export function setSealState(seal: Element, state: SealState): void {
+    seal.classList.remove('is-open', 'is-sealed', 'is-sealing', 'is-unsealed');
+    seal.classList.add(`is-${state}`);
+}
+
+export function prefersReducedMotion(): boolean {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
 /**

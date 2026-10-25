@@ -19,7 +19,9 @@ test('create, open and decrypt a one-time secret', async ({
 
     expect(shareLink).toMatch(/\/s\/[A-Za-z0-9_-]{22}#v1\.[A-Za-z0-9_-]{43}$/);
     await expect(page.locator('#qr-code svg path')).toHaveAttribute('d', /^M/);
-    await expect(page.locator('#result-max-views')).toHaveText('1');
+    await expect(page.locator('#result-max-views')).toHaveText(
+        '1× (Einmal-Link)',
+    );
 
     const recipient = await (await browser.newContext()).newPage();
     await recipient.goto(shareLink);

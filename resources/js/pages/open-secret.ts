@@ -8,6 +8,8 @@ import {
     hideMessage,
     reloadOnFragmentChange,
     removeFragmentFromAddressBar,
+    setButtonLabel,
+    setSealState,
     showMessage,
 } from './dom';
 
@@ -26,6 +28,7 @@ export function init(): void {
     const button = byId<HTMLButtonElement>('reveal-button');
     const error = byId<HTMLElement>('open-error');
     const output = byId<HTMLElement>('secret-output');
+    const seal = byId<SVGElement>('open-seal');
     const publicId = root.dataset.publicId ?? '';
 
     reloadOnFragmentChange();
@@ -65,7 +68,10 @@ export function init(): void {
         }
 
         button.disabled = true;
-        button.textContent = envelope === null ? 'Rufe ab…' : 'Entschlüssele…';
+        setButtonLabel(
+            button,
+            envelope === null ? 'Wird abgerufen …' : 'Wird entschlüsselt …',
+        );
 
         void (async () => {
             try {
@@ -87,7 +93,7 @@ export function init(): void {
                         'Dieses Secret ist zusätzlich mit einem Passwort geschützt. Der Abruf wurde bereits verbraucht – bitte gib jetzt das Passwort ein.',
                     );
                     button.disabled = false;
-                    button.textContent = 'Entschlüsseln';
+                    setButtonLabel(button, 'Entschlüsseln');
                     password.focus();
                     return;
                 }
@@ -104,6 +110,7 @@ export function init(): void {
                 fragment.linkKey.fill(0);
                 envelope = null;
                 revealStep.hidden = true;
+                setSealState(seal, 'unsealed');
                 byId('secret-result').hidden = false;
                 removeFragmentFromAddressBar();
             } catch (caught) {
@@ -114,7 +121,16 @@ export function init(): void {
                     );
 
                     if (caught.status === 404) {
+                        byId('open-heading').textContent =
+                            'Dieses Secret ist nicht mehr da.';
+                        byId('open-lead').hidden = true;
+                        error.classList.replace(
+                            'notice-danger',
+                            'notice-neutral',
+                        );
                         revealStep.hidden = true;
+                        setSealState(seal, 'open');
+                        byId('open-unavailable-cta').hidden = false;
                         return;
                     }
                 } else {
@@ -123,10 +139,12 @@ export function init(): void {
                 }
 
                 button.disabled = false;
-                button.textContent =
+                setButtonLabel(
+                    button,
                     envelope === null
                         ? 'Secret anzeigen'
-                        : 'Erneut entschlüsseln';
+                        : 'Erneut entschlüsseln',
+                );
             }
         })();
     });
