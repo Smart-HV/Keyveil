@@ -158,3 +158,11 @@ test('creating secrets is rate limited per hour', function () {
 
     $this->postJson('/api/v1/secrets', validSecretPayload())->assertTooManyRequests();
 });
+
+test('golden vector envelopes pass server validation', function (array $vector) {
+    $this->postJson('/api/v1/secrets', validSecretPayload([
+        'envelope' => $vector['envelope'],
+        'password_protected' => $vector['envelope']['password']['enabled'],
+    ]))->assertCreated();
+})->with(fn () => collect(json_decode(file_get_contents(__DIR__.'/../../fixtures/crypto-v1-vectors.json'), true)['vectors'])
+    ->keyBy('name')->map(fn ($vector) => [$vector])->all());

@@ -1,0 +1,67 @@
+{
+    "description": "KeyVeil crypto protocol v1 golden test vectors. Generated with PHP openssl/hash_hkdf/libsodium; verified by the TypeScript implementation (WebCrypto/hash-wasm). See docs/crypto-protocol-v1.md.",
+    "aad": "password-transfer:v1",
+    "vectors": [
+        {
+            "name": "link-only ascii",
+            "plaintext": "correct horse battery staple",
+            "link_key": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "password": null,
+            "fragment": "#v1.AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8",
+            "envelope": {
+                "v": 1,
+                "alg": "A256GCM",
+                "iv": "QEFCQ0RFRkdISUpL",
+                "hkdf_salt": "gIGCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp8",
+                "password": {
+                    "enabled": false
+                },
+                "ciphertext": "E-0zSWjL73ZnnqPGSkKq1pxsy_8ftpeGs9gBlNvdT1nrpfrpeWzCRU0EeuA"
+            }
+        },
+        {
+            "name": "link-only unicode multiline",
+            "plaintext": "Pässwörd 🔐 日本語\nZeile 2\t<script>alert(1)</script>",
+            "link_key": "ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8",
+            "password": null,
+            "fragment": "#v1.ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8",
+            "envelope": {
+                "v": 1,
+                "alg": "A256GCM",
+                "iv": "UFFSU1RVVldYWVpb",
+                "hkdf_salt": "oKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr8",
+                "password": {
+                    "enabled": false
+                },
+                "ciphertext": "oqrqSbWtI8rVT1NlMWiaPCUOjgGHVmq9_-9_oU-Abfi3H6qHZ1ziAPQYNznWxvtX3FjxRLm_AGtGy8Gb1rLaHQ_ixZTj1tj7PpyK"
+            }
+        },
+        {
+            "name": "password protected",
+            "plaintext": "db-root: S3cr3t!",
+            "link_key": "EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8",
+            "password": "hunter2-Ü",
+            "fragment": "#v1.EBESExQVFhcYGRobHB0eHyAhIiMkJSYnKCkqKywtLi8.p",
+            "envelope": {
+                "v": 1,
+                "alg": "A256GCM",
+                "iv": "YGFiY2RlZmdoaWpr",
+                "hkdf_salt": "wMHCw8TFxsfIycrLzM3Oz9DR0tPU1dbX2Nna29zd3t8",
+                "password": {
+                    "enabled": true,
+                    "kdf": "argon2id",
+                    "salt": "4OHi4-Tl5ufo6err7O3u7w",
+                    "memory_kib": 65536,
+                    "iterations": 3,
+                    "parallelism": 1
+                },
+                "ciphertext": "noiscW5Qn4fP7m9zyQqQqNZCKk2sK9plq-uiYwOclRU"
+            }
+        }
+    ],
+    "delete_token": {
+        "token": "8PHy8_T19vf4-fr7_P3-_wABAgMEBQYHCAkKCwwNDg8",
+        "sha256": "uS6Hlk5W4b1t_wwpzB-9dnzHYITubD45PBMOz76QSAc",
+        "fragment": "#d=8PHy8_T19vf4-fr7_P3-_wABAgMEBQYHCAkKCwwNDg8"
+    }
+}
