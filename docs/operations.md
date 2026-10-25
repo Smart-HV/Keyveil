@@ -1,16 +1,16 @@
-# Betrieb
+# Operations
 
-## Infrastruktur
+## Infrastructure
 
-- PHP 8.3+ mit `pdo_pgsql`, `sodium` (nur Tests), `pcntl`/`posix` (nur Concurrency-Tests)
-- PostgreSQL (Source of Truth für View-Verbrauch), Session-Zeitzone wird von Laravel auf UTC gesetzt
-- Redis für Cache-Store: Rate Limits und Scheduler-Lock (`CACHE_STORE=redis`)
-- Scheduler: `* * * * * php artisan schedule:run` → `model:prune` für abgelaufene Secrets (`onOneServer`)
-- Keine Queue nötig
+- PHP 8.3+ with `pdo_pgsql`; `sodium` (tests only) and `pcntl`/`posix` (concurrency tests only)
+- PostgreSQL — the source of truth for view consumption. `config/database.php` forces the session time zone to UTC so `TIMESTAMPTZ` values are correct.
+- Redis as cache store for rate limits and the scheduler lock (`CACHE_STORE=redis`)
+- Scheduler: `* * * * * php artisan schedule:run` → `model:prune` removes expired secrets (`onOneServer`)
+- No queue worker required
 
-PostgreSQL und Redis dürfen nicht öffentlich erreichbar sein. DB-User mit Least Privilege (nur DML auf `secrets`, `cache*`, `migrations` lesend; Migrationen mit separatem User).
+PostgreSQL and Redis must not be reachable from the public network. Use a least-privilege database user for the app (DML on `secrets` and the cache tables only) and a separate user for migrations.
 
-## Produktions-.env (Auszug)
+## Production `.env` (excerpt)
 
 ```dotenv
 APP_ENV=production
@@ -25,12 +25,12 @@ SESSION_SAME_SITE=strict
 TRUSTED_PROXIES=10.0.0.0/8
 ```
 
-Grenzen (`SECRET_*`) siehe `.env.example` und `config/secrets.php`. Crypto-Parameter sind **nicht** per ENV konfigurierbar.
+For limits (`SECRET_*`) see [`.env.example`](../.env.example) and [`config/secrets.php`](../config/secrets.php). Crypto parameters are **not** configurable through the environment.
 
-## Reverse Proxy (nginx-Beispiel)
+## Reverse proxy (nginx example)
 
 ```nginx
-# Pfad ohne Query loggen; Fragment wird vom Browser ohnehin nie gesendet.
+# Log the path without the query string; browsers never send the fragment anyway.
 log_format keyveil '$remote_addr [$time_local] "$request_method $uri" $status $body_bytes_sent';
 access_log /var/log/nginx/keyveil.log keyveil;
 
@@ -45,7 +45,7 @@ server {
     http2 on;
     server_name secrets.example.com;
 
-    # Kompatibel mit SECRET_MAX_REQUEST_BYTES (132 KiB).
+    # Matches SECRET_MAX_REQUEST_BYTES (132 KiB).
     client_max_body_size 132k;
 
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
@@ -67,50 +67,45 @@ server {
 }
 ```
 
-- `/api/v1/secrets*` und `/s/*`, `/manage/*` niemals per CDN/Edge cachen (Laravel sendet `Cache-Control: no-store`).
-- Keine APM-Body-Capture, keine Session-Replay- oder Marketing-Skripte.
+- Never cache `/api/v1/secrets*`, `/s/*` or `/manage/*` in a CDN or edge cache (Laravel sends `Cache-Control: no-store`).
+- No APM body capture, no session replay or marketing scripts.
 - PHP: `post_max_size` ≥ `client_max_body_size`, `display_errors=Off`, `zend.exception_ignore_args=On`.
-- HSTS `preload` erst nach bewusster Prüfung des Domain-/Subdomain-Konzepts.
-- Log-Retention kurz halten (z. B. 7 Tage), keine Referrer loggen.
+- Only add HSTS `preload` after deliberately reviewing your domain and subdomain setup.
+- Keep log retention short (e.g. 7 days) and do not log referrers.
 
 ## Backups
 
-- Backups enthalten Ciphertext und Lifecycle-Metadaten, aber keine Schlüssel. Trotzdem verschlüsseln, Zugriff minimieren, Retention definieren (z. B. ≤ 7 Tage = max. TTL).
-- Physisch gelöschte Secrets können in historischen Backups noch existieren. Produktkommunikation darf nichts anderes behaupten.
+- Backups contain ciphertext and lifecycle metadata, but no keys. Encrypt them anyway, restrict access and define a retention period (e.g. ≤ 7 days, the maximum TTL).
+- Physically deleted secrets can still exist in older backups. Do not claim otherwise to your users.
 
-## Build & Deployment (Malicious-Frontend-Mitigation)
+## Build and deployment (malicious frontend mitigation)
 
-- Assets in CI bauen (`npm ci && npm run build`), Deployment nutzt das CI-Artefakt; kein Build auf dem Production-Host.
-- `package-lock.json` / `composer.lock` committet; Runtime-JS-Abhängigkeiten exakt gepinnt: `hash-wasm@4.12.0`, `uqr@0.1.3` (beide MIT, 0 Dependencies). Schriften: `@fontsource-variable/geist` und `geist-mono` `@5.3.0` (OFL, nur CSS + woff2, kein JS), same-origin über Vite gebündelt.
-- `.npmrc`: `ignore-scripts=true` (keine postinstall-Skripte).
-- Keine öffentlichen Source Maps (`build.sourcemap: false`).
-- Branch Protection, Reviews für alles unter `resources/js/crypto/`, getrennte CI/CD-Rechte, Dependabot-PRs nur mit Review.
+- Build assets in CI (`npm ci && npm run build`) and deploy that artifact; never build on the production host.
+- `package-lock.json` and `composer.lock` are committed. Runtime JavaScript dependencies are pinned exactly: `hash-wasm@4.12.0` and `uqr@0.1.3` (both MIT, zero dependencies). Fonts: `@fontsource-variable/geist` and `geist-mono` `@5.3.0` (OFL, CSS and woff2 only, no JavaScript), bundled same-origin by Vite.
+- `.npmrc` sets `ignore-scripts=true` (no install scripts).
+- No public source maps (`build.sourcemap: false`).
+- Branch protection, mandatory review for everything under `resources/js/crypto/`, separate CI/CD permissions, Dependabot pull requests merged only after review.
+- Run `npm audit` and `composer audit` for every release.
 
-## Audit-Stand
+## Before your first production deployment
 
-| Datum | `npm audit` | `composer audit` |
-|---|---|---|
-| 2026-10-25 | 0 vulnerabilities | keine Advisories |
+- [ ] **Benchmark Argon2id** on current desktop Chrome, Firefox and Safari, an average Android phone and a current iPhone. Goal: noticeably expensive for attackers, still acceptable for users. Adjust `ARGON2ID_DEFAULTS` in `protocol-v1.ts` if needed — existing secrets stay decryptable because the parameters are stored in the envelope.
+- [ ] Load-test and tune the rate limits.
+- [ ] Review your deployment against the [threat model](threat-model.md).
 
-## Offene Release-TODOs
+## Release checklist
 
-- [ ] **Argon2id-Benchmark** auf Desktop Chrome/Firefox/Safari, durchschnittlichem Android, aktuellem iPhone. Ziel: spürbar teuer, aber akzeptabel. Parameter ggf. in `protocol-v1.ts` (`ARGON2ID_DEFAULTS`) anpassen — alte Secrets bleiben entschlüsselbar, da Parameter im Envelope stehen.
-- [ ] Rate-Limit-Load-Test und Tuning.
-- [ ] Manueller Security-Review anhand von `threat-model.md`.
-
-## Release-Checkliste
-
-- [ ] `APP_DEBUG=false`, sicherer `APP_KEY`
-- [ ] Cookies `Secure`/`HttpOnly`/`SameSite=Strict`
-- [ ] HTTPS-Redirect und HSTS aktiv
-- [ ] Keine Debugbar/Telescope auf Secret-Routen
-- [ ] `TRUSTED_PROXIES` nur für die tatsächlichen Proxies
-- [ ] DB-User mit Least Privilege; PostgreSQL und Redis nicht öffentlich erreichbar
-- [ ] Backups verschlüsselt, Retention definiert
-- [ ] Secrets in CI/CD geschützt
-- [ ] `npm audit` und `composer audit` geprüft
-- [ ] CSP und Security-Header im Browser geprüft, keine externen Requests auf Secret-Seiten
-- [ ] Keine öffentlichen Source Maps
-- [ ] Logs auf Redaction geprüft
-- [ ] Rate-Limits unter Last getestet
-- [ ] Scheduler (`schedule:run`) läuft
+- [ ] `APP_DEBUG=false` and a strong `APP_KEY`
+- [ ] Cookies `Secure`, `HttpOnly`, `SameSite=Strict`
+- [ ] HTTPS redirect and HSTS active
+- [ ] No debug bar or Telescope on secret routes
+- [ ] `TRUSTED_PROXIES` limited to your actual proxies
+- [ ] Least-privilege database user; PostgreSQL and Redis not publicly reachable
+- [ ] Backups encrypted, retention defined
+- [ ] CI/CD secrets protected
+- [ ] `npm audit` and `composer audit` reviewed
+- [ ] CSP and security headers verified in the browser; no external requests on secret pages
+- [ ] No public source maps
+- [ ] Logs checked for redaction
+- [ ] Rate limits load-tested
+- [ ] Scheduler (`schedule:run`) running

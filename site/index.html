@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta
+            http-equiv="Content-Security-Policy"
+            content="default-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; form-action 'none'"
+        />
+        <meta name="referrer" content="no-referrer" />
+        <meta name="color-scheme" content="light dark" />
+
+        <title>KeyVeil – Send a password once. Then it's gone.</title>
+        <meta
+            name="description"
+            content="Open-source, self-hosted secret sharing. KeyVeil encrypts passwords and notes in your browser and turns them into a link that works once. The server never sees the key."
+        />
+        <link rel="canonical" href="https://smart-hv.github.io/Keyveil/" />
+
+        <meta property="og:type" content="website" />
+        <meta
+            property="og:title"
+            content="KeyVeil – Send a password once. Then it's gone."
+        />
+        <meta
+            property="og:description"
+            content="Open-source, self-hosted secret sharing with end-to-end encryption in the browser."
+        />
+        <meta property="og:url" content="https://smart-hv.github.io/Keyveil/" />
+        <meta
+            property="og:image"
+            content="https://smart-hv.github.io/Keyveil/screenshots/03-link-created-desktop-light.png"
+        />
+        <meta name="twitter:card" content="summary_large_image" />
+
+        <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+        <link rel="stylesheet" href="assets/site.css" />
+    </head>
+    <body>
+        <header class="nav">
+            <a class="brand" href="./" aria-label="KeyVeil home">
+                <svg
+                    class="brand-mark"
+                    viewBox="0 0 32 32"
+                    width="28"
+                    height="28"
+                    aria-hidden="true"
+                >
+                    <path
+                        class="brand-veil"
+                        d="M16 2.5 28.5 9v14L16 29.5 3.5 23V9L16 2.5Z"
+                    />
+                    <circle class="brand-key" cx="16" cy="14" r="3.5" />
+                    <path class="brand-key" d="M16 17.5v6" />
+                </svg>
+                <span>KeyVeil</span>
+            </a>
+            <nav aria-label="Sections">
+                <a href="#how-it-works">How it works</a>
+                <a href="#security">Security</a>
+                <a href="#self-host">Self-host</a>
+            </nav>
+            <a
+                class="button button-secondary nav-cta"
+                href="https://github.com/Smart-HV/Keyveil"
+                >GitHub</a
+            >
+        </header>
+
+        <main>
+            <section class="hero">
+                <div class="hero-text">
+                    <h1>Send a password once. Then it's gone.</h1>
+                    <p class="lead">
+                        KeyVeil encrypts secrets in your browser and turns them
+                        into a link that works once. The server stores
+                        ciphertext only – it never sees the key, the text or the
+                        password.
+                    </p>
+                    <div class="actions">
+                        <a
+                            class="button button-primary"
+                            href="https://github.com/Smart-HV/Keyveil"
+                            >View on GitHub</a
+                        >
+                        <a class="button button-secondary" href="#self-host"
+                            >Self-host it</a
+                        >
+                    </div>
+                    <p class="fineprint">
+                        Open source under the Apache License 2.0, built with
+                        Laravel and plain TypeScript.
+                    </p>
+                </div>
+                <picture class="hero-shot">
+                    <source
+                        media="(prefers-color-scheme: dark)"
+                        srcset="screenshots/hero-dark.png"
+                    />
+                    <img
+                        src="screenshots/hero-light.png"
+                        width="664"
+                        height="695"
+                        alt="KeyVeil after creating a secret: share link with copy button, expiry, view limit, password status and QR code."
+                    />
+                </picture>
+            </section>
+
+            <section class="anatomy" aria-labelledby="anatomy-title">
+                <h2 id="anatomy-title" class="section-label">
+                    Anatomy of a KeyVeil link
+                </h2>
+                <figure class="link">
+                    <p class="link-url">
+                        <span class="link-server"
+                            >https://secrets.example.com/s/K5v9mYhDf8r2WqP7N3x1Aq</span
+                        ><span class="link-fragment"
+                            >#v1.mB3kZ0vYqH8wT2rN5pLc6dXe9sJfA1uGo4iKy7Rb0QE</span
+                        >
+                    </p>
+                    <figcaption class="link-notes">
+                        <p class="note note-server">
+                            <strong>Sent to the server</strong>
+                            <span
+                                >Tells it which ciphertext to hand out. Nothing
+                                more.</span
+                            >
+                        </p>
+                        <p class="note note-fragment">
+                            <strong>Never leaves your browser</strong>
+                            <span
+                                >Everything after <code>#</code> is not part of
+                                any HTTP request. It holds the 256-bit
+                                key.</span
+                            >
+                        </p>
+                    </figcaption>
+                </figure>
+            </section>
+
+            <section
+                id="how-it-works"
+                class="section"
+                aria-labelledby="how-title"
+            >
+                <h2 id="how-title">How it works</h2>
+                <ol class="steps">
+                    <li>
+                        <picture>
+                            <source
+                                media="(prefers-color-scheme: dark)"
+                                srcset="screenshots/01-create-mobile-dark.png"
+                            />
+                            <img
+                                src="screenshots/01-create-mobile-light.png"
+                                width="390"
+                                height="1629"
+                                loading="lazy"
+                                alt="Form to enter a secret, expiry and view limit."
+                            />
+                        </picture>
+                        <h3>Encrypt in your browser</h3>
+                        <p>
+                            Paste a password or a note, pick an expiry and how
+                            often it may be opened. AES-256-GCM encryption
+                            happens on your device, optionally with an extra
+                            password hardened by Argon2id.
+                        </p>
+                    </li>
+                    <li>
+                        <picture>
+                            <source
+                                media="(prefers-color-scheme: dark)"
+                                srcset="
+                                    screenshots/03-link-created-mobile-dark.png
+                                "
+                            />
+                            <img
+                                src="screenshots/03-link-created-mobile-light.png"
+                                width="390"
+                                height="1826"
+                                loading="lazy"
+                                alt="The generated share link with QR code."
+                            />
+                        </picture>
+                        <h3>Share the link</h3>
+                        <p>
+                            Send it through any channel. Link previews and
+                            crawlers only load the page; nothing is consumed
+                            until a person clicks to reveal it.
+                        </p>
+                    </li>
+                    <li>
+                        <picture>
+                            <source
+                                media="(prefers-color-scheme: dark)"
+                                srcset="screenshots/05-revealed-mobile-dark.png"
+                            />
+                            <img
+                                src="screenshots/05-revealed-mobile-light.png"
+                                width="390"
+                                height="844"
+                                loading="lazy"
+                                alt="The decrypted secret shown to the recipient."
+                            />
+                        </picture>
+                        <h3>Open once, then it's gone</h3>
+                        <p>
+                            The recipient's browser decrypts locally. The last
+                            allowed view deletes the ciphertext from the
+                            database before the response is even sent.
+                        </p>
+                    </li>
+                </ol>
+            </section>
+
+            <section id="server" class="section" aria-labelledby="server-title">
+                <h2 id="server-title">What the server knows</h2>
+                <div class="ledger">
+                    <div class="ledger-column">
+                        <h3>Stored until expiry or the last view</h3>
+                        <ul>
+                            <li>
+                                The encrypted envelope: ciphertext, IV and salts
+                            </li>
+                            <li>Expiry time and view limit</li>
+                            <li>How often the secret has been opened</li>
+                            <li>A hash of a hash of the delete token</li>
+                        </ul>
+                    </div>
+                    <div class="ledger-column ledger-never">
+                        <h3>Never</h3>
+                        <ul>
+                            <li>The text you share</li>
+                            <li>The decryption key</li>
+                            <li>Your additional password</li>
+                            <li>
+                                Your IP address, browser or referrer in the
+                                database
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section
+                id="security"
+                class="section"
+                aria-labelledby="security-title"
+            >
+                <h2 id="security-title">Built to be checked, not trusted</h2>
+                <p class="section-lead">
+                    Security claims are only as good as the tests behind them.
+                    Every one of these runs in CI.
+                </p>
+                <dl class="facts">
+                    <div>
+                        <dt>Standard cryptography</dt>
+                        <dd>
+                            AES-256-GCM, HKDF-SHA-256 and Argon2id through
+                            WebCrypto and a single WASM library. Nothing
+                            home-made.
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Two implementations agree</dt>
+                        <dd>
+                            Test vectors are generated with OpenSSL and
+                            libsodium and reproduced byte for byte by the
+                            browser code.
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Atomic claims</dt>
+                        <dd>
+                            Parallel requests race against a PostgreSQL row
+                            lock. Tests fork real processes and prove that
+                            exactly the allowed number of views succeed.
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>The key stays put</dt>
+                        <dd>
+                            An end-to-end test in Chromium, Firefox and WebKit
+                            asserts the key never appears in any request URL,
+                            body or header.
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Strict Content Security Policy</dt>
+                        <dd>
+                            No inline scripts or styles, no third-party
+                            requests, no analytics, no service worker. Just like
+                            this page.
+                        </dd>
+                    </div>
+                    <div>
+                        <dt>Nothing to probe</dt>
+                        <dd>
+                            Unknown, expired, used and deleted secrets return
+                            the same response, and every endpoint is rate
+                            limited.
+                        </dd>
+                    </div>
+                </dl>
+                <aside class="callout">
+                    <p>
+                        <strong>Not audited yet.</strong> KeyVeil has not had an
+                        independent security audit. Like every web app that
+                        encrypts in the browser, it also depends on the server
+                        delivering honest JavaScript, so run it from a release
+                        you have reviewed.
+                    </p>
+                    <p>
+                        <a
+                            href="https://github.com/Smart-HV/Keyveil/blob/main/docs/threat-model.md"
+                            >Read the threat model</a
+                        >
+                    </p>
+                </aside>
+            </section>
+
+            <section
+                id="self-host"
+                class="section"
+                aria-labelledby="self-host-title"
+            >
+                <h2 id="self-host-title">Self-host it</h2>
+                <p class="section-lead">
+                    A standard Laravel app. You need PHP 8.3+, PostgreSQL, Redis
+                    in production and HTTPS. No external services, no accounts.
+                </p>
+                <pre
+                    class="code"
+                ><code>git clone https://github.com/Smart-HV/Keyveil.git keyveil
+cd keyveil
+cp .env.example .env
+composer setup
+composer run dev</code></pre>
+                <div class="guides">
+                    <a
+                        class="guide"
+                        href="https://github.com/Smart-HV/Keyveil/blob/main/docs/operations.md"
+                    >
+                        <strong>Run it in production</strong>
+                        <span
+                            >Reverse proxy, scheduler, backups and a release
+                            checklist.</span
+                        >
+                    </a>
+                    <a
+                        class="guide"
+                        href="https://github.com/Smart-HV/Keyveil/blob/main/docs/theming.md"
+                    >
+                        <strong>Make it yours</strong>
+                        <span
+                            >Name and logo via <code>.env</code>, colors and
+                            fonts in one CSS file.</span
+                        >
+                    </a>
+                    <a
+                        class="guide"
+                        href="https://github.com/Smart-HV/Keyveil/blob/main/docs/crypto-protocol-v1.md"
+                    >
+                        <strong>Read the protocol</strong>
+                        <span
+                            >Byte lengths, encodings, key derivation and test
+                            vectors.</span
+                        >
+                    </a>
+                </div>
+                <p class="fineprint">
+                    The interface is currently available in German. Translations
+                    are welcome.
+                </p>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>
+                KeyVeil is open source under the
+                <a href="https://github.com/Smart-HV/Keyveil/blob/main/LICENSE"
+                    >Apache License 2.0</a
+                >, made by Smart-HV.
+            </p>
+            <nav aria-label="Project links">
+                <a href="https://github.com/Smart-HV/Keyveil">GitHub</a>
+                <a
+                    href="https://github.com/Smart-HV/Keyveil/blob/main/SECURITY.md"
+                    >Report a vulnerability</a
+                >
+                <a
+                    href="https://github.com/Smart-HV/Keyveil/blob/main/CONTRIBUTING.md"
+                    >Contribute</a
+                >
+            </nav>
+        </footer>
+    </body>
+</html>

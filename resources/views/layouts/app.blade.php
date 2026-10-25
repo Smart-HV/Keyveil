@@ -11,6 +11,7 @@
         <title>@yield('title', config('app.name'))</title>
 
         <link rel="icon" href="{{ config('branding.favicon') }}">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         @vite(['resources/css/app.css', 'resources/js/app.ts'])
     </head>

@@ -1,2 +1,4 @@
 User-agent: *
-Disallow:
+Disallow: /s/
+Disallow: /manage/
+Disallow: /api/

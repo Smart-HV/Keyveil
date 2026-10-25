@@ -46,3 +46,6 @@ yarn-error.log
 /playwright-report
 /plan.md
 /.vagrant
+
+# GitHub Pages: screenshots are copied in at deploy time
+/site/screenshots

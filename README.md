@@ -5,9 +5,11 @@
 [![tests](https://github.com/Smart-HV/Keyveil/actions/workflows/tests.yml/badge.svg)](https://github.com/Smart-HV/Keyveil/actions/workflows/tests.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
+**[Project website](https://smart-hv.github.io/Keyveil/)** · [Threat model](docs/threat-model.md) · [Crypto protocol](docs/crypto-protocol-v1.md)
+
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="screenshots/03-link-created-desktop-dark.png">
-    <img alt="KeyVeil after creating a secret: share link, expiry, view limit and QR code" src="screenshots/03-link-created-desktop-light.png">
+    <source media="(prefers-color-scheme: dark)" srcset="screenshots/hero-dark.png">
+    <img alt="KeyVeil after creating a secret: share link, expiry, view limit and QR code" src="screenshots/hero-light.png" width="560">
 </picture>
 
 KeyVeil is a self-hosted, zero-knowledge secret sharing app built with Laravel and plain TypeScript. The server only ever stores ciphertext and a few lifecycle fields. The decryption key travels in the URL fragment (`#…`), which browsers never send to a server.

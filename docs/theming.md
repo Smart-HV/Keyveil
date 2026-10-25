@@ -1,16 +1,18 @@
-# Theming & Branding
+# Theming and branding
 
-Name, Logo, Farben und Schriften lassen sich ohne Eingriff in die App-Logik anpassen.
+Name, logo, colors and fonts can be changed without touching application logic.
 
-| Was | Wo | Rebuild nötig? |
+| What | Where | Rebuild needed? |
 |---|---|---|
-| Name | `APP_NAME` in `.env` | nein |
-| Logo | `BRAND_LOGO` in `.env` + Datei in `public/` | nein |
-| Favicon | `BRAND_FAVICON` in `.env` + Datei in `public/` | nein |
-| Farben, Radien, Schatten | `resources/css/theme.css` | ja (`npm run build`) |
-| Schriften | `resources/css/theme.css` | ja (`npm run build`) |
+| Name | `APP_NAME` in `.env` | no |
+| Logo | `BRAND_LOGO` in `.env` + a file in `public/` | no |
+| Favicon | `BRAND_FAVICON` in `.env` + a file in `public/` | no |
+| Colors, radii, shadows | [`resources/css/theme.css`](../resources/css/theme.css) | yes (`npm run build`) |
+| Fonts | [`resources/css/theme.css`](../resources/css/theme.css) | yes (`npm run build`) |
 
-## Name und Logo (`.env`)
+> The user interface text is currently German. Changing the language is not covered by theming.
+
+## Name and logo (`.env`)
 
 ```dotenv
 APP_NAME="Acme Secrets"
@@ -19,30 +21,30 @@ BRAND_FAVICON=/branding/favicon.svg
 BRAND_SHOW_NAME=true
 ```
 
-- Dateien nach `public/branding/` legen (der Ordner ist frei wählbar, muss aber unter `public/` liegen).
-- **Nur same-origin:** Die Content Security Policy erlaubt keine externen Bilder. URLs wie `https://cdn.example.com/logo.svg` werden blockiert.
-- Das Logo wird 28 px hoch dargestellt (SVG empfohlen). Ohne `BRAND_LOGO` erscheint das eingebaute Zeichen, dessen Farben über `--brand-mark` und `--brand-mark-accent` in `theme.css` steuerbar sind.
-- Enthält das Logo bereits den Schriftzug, blendet `BRAND_SHOW_NAME=false` den Text daneben aus. Für Screenreader bleibt der Name als Link-Beschriftung erhalten.
-- Nach Änderungen an `.env` in Produktion: `php artisan config:cache`.
+- Put the files in `public/branding/` (any folder below `public/` works).
+- **Same-origin only:** the Content Security Policy blocks external images, so URLs such as `https://cdn.example.com/logo.svg` will not load.
+- The logo is rendered 28 px high; SVG is recommended. Without `BRAND_LOGO`, the built-in mark is shown; its colors are controlled by `--brand-mark` and `--brand-mark-accent` in `theme.css`.
+- If your logo already contains the wordmark, set `BRAND_SHOW_NAME=false` to hide the text next to it. Screen readers still get the name as the link label.
+- After changing `.env` in production, run `php artisan config:cache`.
 
-## Farben
+## Colors
 
-Alle Farben stehen als CSS-Variablen in `resources/css/theme.css`, jeweils für hell und dunkel (`prefers-color-scheme: dark`). `app.css` enthält keine eigenen Markenfarben.
+All colors are CSS custom properties in `resources/css/theme.css`, each with a light and a dark variant (`prefers-color-scheme: dark`). `app.css` contains no brand colors of its own.
 
-| Token | Rolle |
+| Token | Role |
 |---|---|
-| `--paper` | Seitenhintergrund |
-| `--sheet` | Karten, Dialoge |
-| `--field` | Eingabefelder |
-| `--rule`, `--rule-strong` | Rahmen und Linien |
-| `--ink`, `--ink-muted`, `--ink-faint` | Text; `--ink` ist auch die Farbe des Primärbuttons |
-| `--on-ink` | Text auf dem Primärbutton |
-| `--seal`, `--seal-tint` | Akzentfarbe: „verschlüsselt“, Erfolg, Fokusring, Siegel-Animation |
-| `--caution`, `--caution-tint` | Hinweise zum Verbrauch von Abrufen |
-| `--danger`, `--danger-tint`, `--on-danger` | Fehler und Löschen |
-| `--brand-mark`, `--brand-mark-accent` | eingebautes Logo-Zeichen |
+| `--paper` | page background |
+| `--sheet` | cards, dialogs |
+| `--field` | input fields |
+| `--rule`, `--rule-strong` | borders and dividers |
+| `--ink`, `--ink-muted`, `--ink-faint` | text; `--ink` is also the primary button color |
+| `--on-ink` | text on the primary button |
+| `--seal`, `--seal-tint` | accent: "encrypted", success, focus ring, seal animation |
+| `--caution`, `--caution-tint` | notices about consuming views |
+| `--danger`, `--danger-tint`, `--on-danger` | errors and deletion |
+| `--brand-mark`, `--brand-mark-accent` | built-in logo mark |
 
-Beispiel für eine violette Marke:
+Example of a violet brand:
 
 ```css
 :root {
@@ -60,15 +62,15 @@ Beispiel für eine violette Marke:
 }
 ```
 
-Kontrast prüfen: Text gegen `--paper`/`--sheet` und `--on-ink` gegen `--ink` mindestens 4.5:1.
+Check contrast: text against `--paper` and `--sheet`, and `--on-ink` against `--ink`, should be at least 4.5:1.
 
-Der QR-Code bleibt bewusst schwarz auf weiß, damit er zuverlässig scannbar ist.
+The QR code intentionally stays black on white so it scans reliably.
 
-## Schriften
+## Fonts
 
-Schriften müssen selbst gehostet sein (CSP `font-src 'self'`); Google Fonts o. Ä. werden blockiert.
+Fonts must be self-hosted (CSP `font-src 'self'`); Google Fonts and similar services are blocked.
 
-**Andere Fontsource-Schrift:**
+**Another Fontsource font:**
 
 ```bash
 npm i -E @fontsource-variable/inter
@@ -83,9 +85,9 @@ npm i -E @fontsource-variable/inter
 }
 ```
 
-Den nicht mehr genutzten Import (`@fontsource-variable/geist`) entfernen und das Paket deinstallieren.
+Remove the unused import (`@fontsource-variable/geist`) and uninstall the package.
 
-**Eigene Schriftdateien:** `.woff2` nach `resources/fonts/` legen und in `theme.css` einbinden — Vite bündelt sie same-origin:
+**Your own font files:** put the `.woff2` files in `resources/fonts/` and declare them in `theme.css`; Vite bundles them same-origin:
 
 ```css
 @font-face {
@@ -100,14 +102,14 @@ Den nicht mehr genutzten Import (`@fontsource-variable/geist`) entfernen und das
 }
 ```
 
-**Nur Systemschriften:** Imports entfernen und `--font-sans: system-ui, sans-serif;` setzen.
+**System fonts only:** remove the imports and set `--font-sans: system-ui, sans-serif;`.
 
-`--font-mono` wird nur für Links und den entschlüsselten Inhalt verwendet.
+`--font-mono` is only used for links and the decrypted secret.
 
-## Bauen
+## Build
 
 ```bash
 npm run build
 ```
 
-Danach mit `npm run e2e` prüfen: Der E2E-Test schlägt fehl, falls ein Theme-Asset die CSP verletzt (z. B. ein externer Font).
+Then run `npm run e2e`: the end-to-end tests fail if a theme asset violates the CSP (for example an external font).
