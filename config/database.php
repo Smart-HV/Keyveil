@@ -97,6 +97,8 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            // Laravel writes timestamps without offset; the session must be UTC for TIMESTAMPTZ.
+            'timezone' => 'UTC',
         ],
 
         'sqlsrv' => [

@@ -1,5 +1,7 @@
 <?php
 
+use Database\Factories\SecretFactory;
+use Illuminate\Foundation\Testing\DatabaseTruncation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,6 +19,11 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Feature');
+
+// Concurrency tests need committed rows visible to other connections.
+pest()->extend(TestCase::class)
+    ->use(DatabaseTruncation::class)
+    ->in('Concurrency');
 
 /*
 |--------------------------------------------------------------------------
@@ -44,7 +51,20 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * A valid create request body with a structurally valid v1 envelope.
+ *
+ * @param  array<string, mixed>  $overrides
+ * @return array<string, mixed>
+ */
+function validSecretPayload(array $overrides = []): array
 {
-    // ..
+    return array_replace([
+        'crypto_version' => 1,
+        'envelope' => SecretFactory::envelope(),
+        'password_protected' => false,
+        'expires_in' => 3600,
+        'max_views' => 1,
+        'delete_token_hash' => SecretFactory::base64url(32),
+    ], $overrides);
 }
