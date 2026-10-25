@@ -58,8 +58,23 @@ jobs:
       - name: Setup Application
         run: composer setup
 
-      - name: Run CI Checks
-        run: composer ci:check
+      - name: Format and lint (TypeScript, CSS)
+        run: npm run check
+
+      - name: Type check (TypeScript)
+        run: npm run types:check
+
+      - name: Unit tests (Vitest)
+        run: npm test
+
+      - name: Code style (Pint)
+        run: vendor/bin/pint --test
+
+      - name: Static analysis (PHPStan)
+        run: vendor/bin/phpstan analyse --memory-limit=1G
+
+      - name: Tests (Pest)
+        run: php artisan test
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox webkit
